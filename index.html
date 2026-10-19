@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4-in-1 Media Tools Suite (Universal Fix)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #22c55e;
+      --youtube: #ef4444;
+      --facebook: #1877f2;
+      --tiktok: #ec4899;
+      --insta: #e1306c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    nav button.active, nav button:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    main {
+      flex: 1;
+      max-width: 950px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .tool-panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .tool-panel.active {
+      display: block;
+    }
+
+    h2 {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    p.desc {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      background: #0b1329;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .preview-stage {
+      background: #000;
+      border: 2px dashed var(--accent);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 350px;
+    }
+
+    .preview-frame {
+      max-width: 100%;
+      max-height: 400px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .preview-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .live-badge {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    button.btn-action {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      font-weight: 600;
+      padding: 0.9rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    button.btn-action:hover {
+      background: var(--accent-hover);
+      color: #fff;
+    }
+
+    .btn-download-link {
+      display: inline-block;
+      background: var(--success);
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      margin: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .output-box {
+      margin-top: 1.5rem;
+      padding: 1.2rem;
+      background: #0b1329;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      text-align: center;
+      word-break: break-all;
+    }
+
+    .platform-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      background: #1e293b;
+      border: 1px solid var(--border);
+    }
+
+    .badge.yt { color: var(--youtube); border-color: var(--youtube); }
+    .badge.fb { color: var(--facebook); border-color: var(--facebook); }
+    .badge.tt { color: var(--tiktok); border-color: var(--tiktok); }
+    .badge.ig { color: var(--insta); border-color: var(--insta); }
+    .badge.mp4 { color: var(--accent); border-color: var(--accent); }
+
+    .media-card {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      text-align: left;
+      flex-wrap: wrap;
+      background: #111e38;
+      padding: 1.2rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .media-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Media Toolkit Suite</h1>
+    <nav>
+      <button class="tab-btn active" onclick="switchTab(0)">1. Aspect Ratio</button>
+      <button class="tab-btn" onclick="switchTab(1)">2. Video to MP3</button>
+      <button class="tab-btn" onclick="switchTab(2)">3. All Video Downloader</button>
+      <button class="tab-btn" onclick="switchTab(3)">4. Movie Downloader</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ==========================================
+         TOOL 1: ASPECT RATIO CONVERTER (WALANG BAGO)
+         ========================================== -->
+    <section class="tool-panel active" id="tab-0">
+      <h2>Aspect Ratio & Resolution Converter</h2>
+      <p class="desc">Baguhin ang hugis at linaw ng video nang may agarang live preview.</p>
+      
+      <div class="form-group">
+        <label>1. Mag-upload ng Video (.mp4, .webm, .mov):</label>
+        <input type="file" id="ar-file-input" accept="video/*" onchange="handleARVideoLoad(event)">
+      </div>
+
+      <div class="preview-stage" id="ar-stage" style="display: none;">
+        <div class="preview-frame" id="ar-preview-frame">
+          <video id="ar-source-video" controls playsinline></video>
+        </div>
+        <div class="live-badge" id="ar-live-info">Live Preview</div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label>2. Target Aspect Ratio:</label>
+          <select id="ar-target-preset" onchange="updateLivePreview()">
+            <option value="9:16">9:16 (TikTok / Reels / Shorts - Portrait)</option>
+            <option value="16:9" selected>16:9 (YouTube / TV - Landscape)</option>
+            <option value="1:1">1:1 (Instagram Post - Square)</option>
+            <option value="4:5">4:5 (Instagram Feed - Portrait)</option>
+            <option value="4:3">4:3 (Classic TV / Vintage iPad)</option>
+            <option value="3:4">3:4 (Portrait Presentation)</option>
+            <option value="21:9">21:9 (Ultrawide Cinema)</option>
+            <option value="2.39:1">2.39:1 (Anamorphic Theatrical Movie)</option>
+            <option value="18:9">18:9 / 2:1 (Univisium / Modern Phones)</option>
+            <option value="3:2">3:2 (Classic DSLR Landscape)</option>
+            <option value="2:3">2:3 (Classic DSLR Portrait)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>3. Fit Mode:</label>
+          <select id="ar-fit-mode" onchange="updateLivePreview()">
+            <option value="contain">Fit / Letterbox (Walang bawas, may black bars)</option>
+            <option value="cover">Crop / Fill (Pupunuin ang frame, puputulin ang sobra)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>4. Video Quality (Export):</label>
+          <select id="ar-quality-preset" onchange="updateLivePreview()">
+            <option value="720">720p (HD - Mabilis i-export)</option>
+            <option value="1080" selected>1080p (Full HD - Rekomendado)</option>
+            <option value="1440">1440p (2K Ultra Clear)</option>
+            <option value="480">480p (SD - Maliit ang file)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-action" id="ar-convert-btn" onclick="processAndExportVideo()">I-convert at I-download ang Video</button>
+      
+      <div class="output-box" id="ar-export-status" style="display: none;"></div>
+      <canvas id="ar-canvas" style="display:none;"></canvas>
+    </section>
+
+    <!-- ==========================================
+         TOOL 2: VIDEO TO MP3 (WALANG BAGO)
+         ========================================== -->
+    <section class="tool-panel" id="tab-1">
+      <h2>Video to MP3 Extractor</h2>
+      <p class="desc">Mag-extract ng audio track mula sa video file nang direkta sa browser gamit ang HTML5 API.</p>
+      
+      <div class="form-group">
+        <label>Pumili ng Video File (.mp4, .webm):</label>
+        <input type="file" id="video-file-input" accept="video/*">
+      </div>
+
+      <button class="btn-action" onclick="extractAudio()">Extract Audio (WAV)</button>
+      <div class="output-box" id="audio-output" style="display: none;">
+        <audio id="audio-player" controls style="width: 100%; margin-bottom: 0.5rem;"></audio><br>
+        <a id="audio-download-link" class="btn-action" style="display:inline-block; text-decoration:none; width:auto; padding: 0.5rem 1rem;">Download Audio File</a>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         TOOL 3: ALL VIDEO DOWNLOADER (FIXED PARA SA FACEBOOK AT YOUTUBE)
+         ========================================== -->
+    <section class="tool-panel" id="tab-2">
+      <h2>All Video Downloader (Universal)</h2>
+      <p class="desc">I-paste ang video link mula sa Facebook, YouTube, TikTok, atbp.</p>
+
+      <div class="platform-badges">
+        <span class="badge fb">f Facebook & Reels</span>
+        <span class="badge yt">▶ YouTube & Shorts</span>
+        <span class="badge tt">♫ TikTok</span>
+        <span class="badge ig">📸 Instagram</span>
+        <span class="badge">𝕏 Twitter / X</span>
+        <span class="badge mp4">🎥 Direct .MP4</span>
+      </div>
+
+      <div class="form-group">
+        <label>I-paste ang Video Link Dito:</label>
+        <input type="url" id="universal-video-url" placeholder="https://www.facebook.com/share/... o youtube.com/watch?v=...">
+      </div>
+
+      <button class="btn-action" onclick="downloadAnyVideo()">Suriin at I-download ang Video</button>
+      
+      <div class="output-box" id="universal-status" style="display:none;"></div>
+    </section>
+
+    <!-- ==========================================
+         TOOL 4: MOVIE DOWNLOADER
+         ========================================== -->
+    <section class="tool-panel" id="tab-3">
+      <h2>Movie & Media Stream Downloader</h2>
+      <p class="desc">I-download ang direct movie/large file links.</p>
+
+      <div class="form-group">
+        <label>Direct Movie / Media Link:</label>
+        <input type="url" id="movie-url-input" placeholder="https://archive.org/download/.../sample.mp4">
+      </div>
+
+      <button class="btn-action" onclick="downloadDirectMovie()">Simulan ang Pag-download ng Movie</button>
+      <div class="output-box" id="movie-status" style="display:none;"></div>
+    </section>
+  </main>
+
+  <script>
+    function switchTab(index) {
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tool-panel');
+      tabs.forEach((tab, i) => {
+        tab.classList.toggle('active', i === index);
+        panels[i].classList.toggle('active', i === index);
+      });
+    }
+
+    // --- TOOL 1: ASPECT RATIO LOGIC ---
+    const sourceVideo = document.getElementById('ar-source-video');
+    const previewFrame = document.getElementById('ar-preview-frame');
+    const liveInfo = document.getElementById('ar-live-info');
+    let isProcessing = false;
+
+    function handleARVideoLoad(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      sourceVideo.src = url;
+      document.getElementById('ar-stage').style.display = 'flex';
+
+      sourceVideo.onloadedmetadata = () => {
+        updateLivePreview();
+      };
+    }
+
+    function calculateDimensions(ratioStr, quality) {
+      const parts = ratioStr.split(':').map(Number);
+      const rw = parts[0];
+      const rh = parts[1];
+      let width, height;
+
+      if (rw >= rh) {
+        height = quality;
+        width = Math.round((quality * rw) / rh);
+      } else {
+        width = quality;
+        height = Math.round((quality * rh) / rw);
+      }
+
+      width = width % 2 === 0 ? width : width + 1;
+      height = height % 2 === 0 ? height : height + 1;
+
+      return { width, height, rw, rh };
+    }
+
+    function updateLivePreview() {
+      const ratioStr = document.getElementById('ar-target-preset').value;
+      const fitMode = document.getElementById('ar-fit-mode').value;
+      const quality = parseInt(document.getElementById('ar-quality-preset').value);
+
+      const dims = calculateDimensions(ratioStr, quality);
+
+      previewFrame.style.aspectRatio = `${dims.rw} / ${dims.rh}`;
+      sourceVideo.style.objectFit = fitMode;
+
+      liveInfo.innerHTML = `Target Aspect Ratio: <strong>${ratioStr}</strong> | Export Dimension: <strong>${dims.width} x ${dims.height}px (${quality}p)</strong> | Mode: <strong>${fitMode.toUpperCase()}</strong>`;
+    }
+
+    async function processAndExportVideo() {
+      if (!sourceVideo.src) {
+        alert("Pumili muna ng video file!");
+        return;
+      }
+      if (isProcessing) return;
+
+      const ratioStr = document.getElementById('ar-target-preset').value;
+      const fitMode = document.getElementById('ar-fit-mode').value;
+      const quality = parseInt(document.getElementById('ar-quality-preset').value);
+      const dims = calculateDimensions(ratioStr, quality);
+
+      const statusBox = document.getElementById('ar-export-status');
+      statusBox.style.display = 'block';
+      statusBox.innerHTML = `⏳ Nire-render ang <strong>${dims.width}x${dims.height} (${quality}p)</strong> video... Mangyaring huwag isara ang tab habang nagpe-play.`;
+
+      const canvas = document.getElementById('ar-canvas');
+      canvas.width = dims.width;
+      canvas.height = dims.height;
+      const ctx = canvas.getContext('2d');
+
+      const stream = canvas.captureStream(30);
+
+      try {
+        const audioTracks = sourceVideo.captureStream ? sourceVideo.captureStream().getAudioTracks() : [];
+        if (audioTracks.length > 0) stream.addTrack(audioTracks[0]);
+      } catch (e) {
+        console.warn("Audio note:", e);
+      }
+
+      let bitrate = 6000000;
+      if (quality >= 1080) bitrate = 12000000;
+      if (quality >= 1440) bitrate = 18000000;
+
+      const recorder = new MediaRecorder(stream, { 
+        mimeType: 'video/webm',
+        videoBitsPerSecond: bitrate
+      });
+      const chunks = [];
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const downloadUrl = URL.createObjectURL(blob);
+        statusBox.innerHTML = `
+          ✅ <strong>Rendering Complete!</strong> (${dims.width}x${dims.height})<br><br>
+          <a href="${downloadUrl}" download="video_${dims.width}x${dims.height}_${ratioStr.replace(':', '_')}.webm" class="btn-action" style="display:inline-block; text-decoration:none; width:auto; padding: 0.7rem 1.8rem;">⬇️ I-download ang Bagong Video</a>
+        `;
+        isProcessing = false;
+      };
+
+      recorder.start();
+      isProcessing = true;
+      sourceVideo.currentTime = 0;
+      await sourceVideo.play();
+
+      function drawFrame() {
+        if (sourceVideo.paused || sourceVideo.ended) {
+          if (recorder.state === "recording") recorder.stop();
+          return;
+        }
+
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, dims.width, dims.height);
+
+        const vW = sourceVideo.videoWidth;
+        const vH = sourceVideo.videoHeight;
+
+        const scale = fitMode === 'cover' 
+          ? Math.max(dims.width / vW, dims.height / vH) 
+          : Math.min(dims.width / vW, dims.height / vH);
+
+        const dW = vW * scale;
+        const dH = vH * scale;
+        const dx = (dims.width - dW) / 2;
+        const dy = (dims.height - dH) / 2;
+
+        ctx.drawImage(sourceVideo, dx, dy, dW, dH);
+        requestAnimationFrame(drawFrame);
+      }
+
+      drawFrame();
+    }
+
+    // --- TOOL 2: VIDEO TO MP3 LOGIC ---
+    async function extractAudio() {
+      const fileInput = document.getElementById('video-file-input');
+      const outputDiv = document.getElementById('audio-output');
+
+      if (!fileInput.files.length) {
+        alert("Pumili muna ng video file!");
+        return;
+      }
+
+      outputDiv.style.display = 'block';
+      outputDiv.innerText = "Ini-extract ang audio track... Sandali lamang.";
+
+      try {
+        const arrayBuffer = await fileInput.files[0].arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+        const wavBlob = audioBufferToWav(audioBuffer);
+        const audioUrl = URL.createObjectURL(wavBlob);
+
+        outputDiv.innerHTML = `
+          <audio controls src="${audioUrl}" style="width: 100%; margin-bottom: 0.8rem;"></audio><br>
+          <a href="${audioUrl}" download="extracted_audio.wav" class="btn-action" style="display:inline-block; text-decoration:none; width:auto; padding: 0.5rem 1.5rem;">Download Audio (.wav)</a>
+        `;
+      } catch (err) {
+        outputDiv.innerHTML = `<span style="color:#ef4444;">Error sa pag-extract: ${err.message}</span>`;
+      }
+    }
+
+    function audioBufferToWav(buffer) {
+      let numOfChan = buffer.numberOfChannels,
+          length = buffer.length * numOfChan * 2 + 44,
+          out = new DataView(new ArrayBuffer(length)),
+          channels = [], i, sample, offset = 0, pos = 0;
+
+      function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
+      function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
+
+      setUint32(0x46464952);
+      setUint32(length - 8);
+      setUint32(0x45564157);
+      setUint32(0x20746d66);
+      setUint32(16);
+      setUint16(1);
+      setUint16(numOfChan);
+      setUint32(buffer.sampleRate);
+      setUint32(buffer.sampleRate * 2 * numOfChan);
+      setUint16(numOfChan * 2);
+      setUint16(16);
+      setUint32(0x61746164);
+      setUint32(length - pos - 4);
+
+      for (i = 0; i < buffer.numberOfChannels; i++) channels.push(buffer.getChannelData(i));
+
+      while (offset < buffer.length) {
+        for (i = 0; i < numOfChan; i++) {
+          sample = Math.max(-1, Math.min(1, channels[i][offset]));
+          sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+          out.setInt16(pos, sample, true);
+          pos += 2;
+        }
+        offset++;
+      }
+      return new Blob([out.buffer], { type: 'audio/wav' });
+    }
+
+    // --- TOOL 3: ALL VIDEO DOWNLOADER (FIXED) ---
+    async function downloadAnyVideo() {
+      const url = document.getElementById('universal-video-url').value.trim();
+      const statusBox = document.getElementById('universal-status');
+
+      if (!url) {
+        alert("Mag-paste muna ng video link!");
+        return;
+      }
+
+      statusBox.style.display = 'block';
+      statusBox.innerHTML = `⏳ Kinukuha ang video stream mula sa server... Sandali lamang.`;
+
+      // 1. TIKTOK HANDLER
+      if (url.includes("tiktok.com")) {
+        try {
+          const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+          const data = await res.json();
+          if (data.code === 0 && data.data) {
+            const v = data.data;
+            statusBox.innerHTML = `
+              <div class="media-card">
+                <img src="${v.cover}" alt="Preview">
+                <div style="flex:1;">
+                  <h3 style="font-size:1rem; margin-bottom:0.5rem;">${v.title || "TikTok Video"}</h3>
+                  <div>
+                    <a href="${v.play}" target="_blank" download="tiktok.mp4" class="btn-download-link">⬇️ Download MP4 (No Watermark)</a>
+                    ${v.hdplay ? `<a href="${v.hdplay}" target="_blank" download="tiktok_hd.mp4" class="btn-download-link" style="background:var(--accent);">⬇️ Download HD</a>` : ''}
+                    ${v.music ? `<a href="${v.music}" target="_blank" download="audio.mp3" class="btn-download-link" style="background:#f59e0b;">🎵 Download MP3</a>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+            return;
+          }
+        } catch (e) {
+          console.warn("TikTok fallback:", e);
+        }
+      }
+
+      // 2. FACEBOOK HANDLER (Gamit ang Safe Web Video Gateway para maiwasan ang fb:// error sa Android)
+      if (url.includes("facebook.com") || url.includes("fb.watch")) {
+        // Gumawa ng safe direct web-parser link
+        const cleanUrl = encodeURIComponent(url);
+        statusBox.innerHTML = `
+          <div class="media-card">
+            <div style="flex:1;">
+              <h3 style="font-size:1.1rem; color:var(--facebook); margin-bottom:0.5rem;">🎬 Facebook Video Na-detect!</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+                Dahil sa Android security, pindutin ang buton sa ibaba upang i-extract at i-download ang HD MP4:
+              </p>
+              <div>
+                <button onclick="openExternalBrowser('https://fdown.net/download.php?URL=' + '${cleanUrl}')" class="btn-download-link">
+                  ⬇️ I-download ang Facebook Video (HD/SD)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 3. YOUTUBE HANDLER
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        const cleanUrl = encodeURIComponent(url);
+        statusBox.innerHTML = `
+          <div class="media-card">
+            <div style="flex:1;">
+              <h3 style="font-size:1.1rem; color:var(--youtube); margin-bottom:0.5rem;">▶ YouTube Video Na-detect!</h3>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+                Pindutin ang buton sa ibaba para i-download bilang MP4 Video o MP3 Audio:
+              </p>
+              <div>
+                <button onclick="openExternalBrowser('https://y2meta.mobi/en/?url=' + '${cleanUrl}')" class="btn-download-link">
+                  ⬇️ I-download ang YouTube (MP4 / MP3)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 4. DIRECT VIDEO FILES (.mp4, .webm, atbp.)
+      if (/\.(mp4|webm|mov|mkv|avi)(\?.*)?$/i.test(url)) {
+        statusBox.innerHTML = `
+          ✅ <strong>Direct video link na-detect!</strong><br><br>
+          <a href="${url}" download="video.mp4" target="_blank" class="btn-download-link">⬇️ I-save ang MP4 File</a>
+        `;
+        return;
+      }
+
+      // 5. UNIVERSAL FALLBACK
+      statusBox.innerHTML = `
+        <div style="text-align:center;">
+          <p style="margin-bottom:0.75rem; color:var(--accent);">✅ Handa na ang download link. Pindutin ang buton sa ibaba:</p>
+          <button onclick="openExternalBrowser('${url}')" class="btn-download-link">🔗 Buksan at I-download</button>
+        </div>
+      `;
+    }
+
+    // Helper: Pinipilit buksan sa tunay na Chrome/Default Browser para maiwasan ang in-app WebView scheme crash
+    function openExternalBrowser(targetUrl) {
+      const a = document.createElement('a');
+      a.href = targetUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // --- TOOL 4: MOVIE DOWNLOADER ---
+    function downloadDirectMovie() {
+      const url = document.getElementById('movie-url-input').value.trim();
+      const statusBox = document.getElementById('movie-status');
+
+      if (!url) {
+        alert("Maglagay ng valid na direct movie link!");
+        return;
+      }
+
+      statusBox.style.display = 'block';
+      statusBox.innerHTML = `
+        🎬 <strong>Nakahanda na ang download!</strong><br><br>
+        <a href="${url}" download="movie.mp4" target="_blank" class="btn-download-link">⬇️ Pindutin para I-save ang Movie</a>
+      `;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'movie.mp4');
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
