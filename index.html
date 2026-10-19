@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4-in-1 Media Tools Suite (Universal Fix)</title>
+  <title>4-in-1 Media Tools Suite</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -18,6 +18,7 @@
       --facebook: #1877f2;
       --tiktok: #ec4899;
       --insta: #e1306c;
+      --audio-btn: #f59e0b;
     }
 
     * {
@@ -202,10 +203,37 @@
       color: #000;
       text-decoration: none;
       font-weight: 600;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1.2rem;
       border-radius: 6px;
-      margin: 0.35rem;
-      font-size: 0.95rem;
+      margin: 0.35rem 0.35rem 0.35rem 0;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .btn-alt-link {
+      display: inline-block;
+      background: var(--accent);
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.75rem 1.2rem;
+      border-radius: 6px;
+      margin: 0.35rem 0.35rem 0.35rem 0;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .btn-audio-link {
+      display: inline-block;
+      background: var(--audio-btn);
+      color: #000;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.75rem 1.2rem;
+      border-radius: 6px;
+      margin: 0.35rem 0.35rem 0.35rem 0;
+      font-size: 0.9rem;
+      text-align: center;
     }
 
     .output-box {
@@ -242,22 +270,20 @@
 
     .media-card {
       display: flex;
-      gap: 1.2rem;
-      align-items: center;
+      flex-direction: column;
       text-align: left;
-      flex-wrap: wrap;
       background: #111e38;
       padding: 1.2rem;
       border-radius: 8px;
       margin-top: 1rem;
     }
 
-    .media-card img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
+    .media-card video {
+      width: 100%;
+      max-height: 300px;
       border-radius: 8px;
       background: #000;
+      margin: 0.8rem 0;
     }
   </style>
 </head>
@@ -275,7 +301,7 @@
 
   <main>
     <!-- ==========================================
-         TOOL 1: ASPECT RATIO CONVERTER (WALANG BAGO)
+         TOOL 1: ASPECT RATIO CONVERTER (HINDI GINALAW)
          ========================================== -->
     <section class="tool-panel active" id="tab-0">
       <h2>Aspect Ratio & Resolution Converter</h2>
@@ -337,7 +363,7 @@
     </section>
 
     <!-- ==========================================
-         TOOL 2: VIDEO TO MP3 (WALANG BAGO)
+         TOOL 2: VIDEO TO MP3 (HINDI GINALAW)
          ========================================== -->
     <section class="tool-panel" id="tab-1">
       <h2>Video to MP3 Extractor</h2>
@@ -356,15 +382,15 @@
     </section>
 
     <!-- ==========================================
-         TOOL 3: ALL VIDEO DOWNLOADER (FIXED PARA SA FACEBOOK AT YOUTUBE)
+         TOOL 3: ALL VIDEO DOWNLOADER (BULLETPROOF FIX)
          ========================================== -->
     <section class="tool-panel" id="tab-2">
-      <h2>All Video Downloader (Universal)</h2>
-      <p class="desc">I-paste ang video link mula sa Facebook, YouTube, TikTok, atbp.</p>
+      <h2>All Video Downloader (Bulletproof Engine)</h2>
+      <p class="desc">Direktang kukunin ang video mula sa YouTube, Facebook, TikTok, atbp.</p>
 
       <div class="platform-badges">
-        <span class="badge fb">f Facebook & Reels</span>
         <span class="badge yt">▶ YouTube & Shorts</span>
+        <span class="badge fb">f Facebook & Reels</span>
         <span class="badge tt">♫ TikTok</span>
         <span class="badge ig">📸 Instagram</span>
         <span class="badge">𝕏 Twitter / X</span>
@@ -373,10 +399,10 @@
 
       <div class="form-group">
         <label>I-paste ang Video Link Dito:</label>
-        <input type="url" id="universal-video-url" placeholder="https://www.facebook.com/share/... o youtube.com/watch?v=...">
+        <input type="url" id="universal-video-url" placeholder="https://youtu.be/... o https://www.facebook.com/share/r/...">
       </div>
 
-      <button class="btn-action" onclick="downloadAnyVideo()">Suriin at I-download ang Video</button>
+      <button class="btn-action" onclick="downloadSmartMedia()">Suriin at Ilabas ang Video</button>
       
       <div class="output-box" id="universal-status" style="display:none;"></div>
     </section>
@@ -611,116 +637,190 @@
       return new Blob([out.buffer], { type: 'audio/wav' });
     }
 
-    // --- TOOL 3: ALL VIDEO DOWNLOADER (FIXED) ---
-    async function downloadAnyVideo() {
-      const url = document.getElementById('universal-video-url').value.trim();
+    // ==============================================================
+    // --- TOOL 3: BULLETPROOF UNIVERSAL DOWNLOADER ---
+    // ==============================================================
+
+    // Helper: Kinukuha ang malinis na 11-char YouTube ID (Kahit may ?si=...)
+    function parseYouTubeVideoId(url) {
+      const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([\w-]{11})/;
+      const match = url.match(regExp);
+      return match ? match[1] : null;
+    }
+
+    async function downloadSmartMedia() {
+      let rawUrl = document.getElementById('universal-video-url').value.trim();
       const statusBox = document.getElementById('universal-status');
 
-      if (!url) {
+      if (!rawUrl) {
         alert("Mag-paste muna ng video link!");
         return;
       }
 
       statusBox.style.display = 'block';
-      statusBox.innerHTML = `⏳ Kinukuha ang video stream mula sa server... Sandali lamang.`;
+      statusBox.innerHTML = `🔍 Sinusuri ang link... Sandali lamang.`;
 
-      // 1. TIKTOK HANDLER
-      if (url.includes("tiktok.com")) {
+      // -------------------------------------------------------------
+      // 1. YOUTUBE HANDLER (Walang CORS Error - Gumagamit ng In-App Widget)
+      // -------------------------------------------------------------
+      const ytId = parseYouTubeVideoId(rawUrl);
+      if (ytId) {
+        statusBox.innerHTML = `
+          <div class="media-card">
+            <h3 style="font-size:1.05rem; margin-bottom:0.6rem; color:var(--text);">▶ YouTube Video Na-detect!</h3>
+            
+            <!-- Live YouTube Player Preview -->
+            <iframe 
+              src="https://www.youtube-nocookie.com/embed/${ytId}" 
+              style="width:100%; height:230px; border-radius:8px; border:none; margin-bottom:0.8rem; background:#000;" 
+              allowfullscreen>
+            </iframe>
+
+            <!-- In-App Download Buttons Widget (Diretso MP4 at MP3) -->
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">
+              ⬇️ <strong>Piliin ang format sa ibaba para i-download:</strong>
+            </p>
+            <iframe 
+              src="https://bestapi.cc/widget/professional-button/${ytId}/dark" 
+              style="width:100%; height:110px; border:none; border-radius:8px; overflow:hidden;" 
+              scrolling="no">
+            </iframe>
+          </div>
+        `;
+        return;
+      }
+
+      // -------------------------------------------------------------
+      // 2. TIKTOK HANDLER
+      // -------------------------------------------------------------
+      if (rawUrl.includes("tiktok.com")) {
         try {
-          const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+          const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(rawUrl)}`);
           const data = await res.json();
           if (data.code === 0 && data.data) {
             const v = data.data;
             statusBox.innerHTML = `
               <div class="media-card">
-                <img src="${v.cover}" alt="Preview">
-                <div style="flex:1;">
-                  <h3 style="font-size:1rem; margin-bottom:0.5rem;">${v.title || "TikTok Video"}</h3>
-                  <div>
-                    <a href="${v.play}" target="_blank" download="tiktok.mp4" class="btn-download-link">⬇️ Download MP4 (No Watermark)</a>
-                    ${v.hdplay ? `<a href="${v.hdplay}" target="_blank" download="tiktok_hd.mp4" class="btn-download-link" style="background:var(--accent);">⬇️ Download HD</a>` : ''}
-                    ${v.music ? `<a href="${v.music}" target="_blank" download="audio.mp3" class="btn-download-link" style="background:#f59e0b;">🎵 Download MP3</a>` : ''}
-                  </div>
+                <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--text);">${v.title || "TikTok Video"}</h3>
+                <video controls src="${v.play}" playsinline></video>
+                <div>
+                  <a href="${v.play}" download="tiktok.mp4" class="btn-download-link">🎬 I-download ang MP4 (May Boses)</a>
+                  ${v.hdplay ? `<a href="${v.hdplay}" download="tiktok_hd.mp4" class="btn-alt-link">🎬 I-download ang HD</a>` : ''}
+                  ${v.music ? `<a href="${v.music}" download="audio.mp3" class="btn-audio-link">🎵 I-download ang MP3</a>` : ''}
                 </div>
               </div>
             `;
             return;
           }
         } catch (e) {
-          console.warn("TikTok fallback:", e);
+          console.warn("TikTok note:", e);
         }
       }
 
-      // 2. FACEBOOK HANDLER (Gamit ang Safe Web Video Gateway para maiwasan ang fb:// error sa Android)
-      if (url.includes("facebook.com") || url.includes("fb.watch")) {
-        // Gumawa ng safe direct web-parser link
-        const cleanUrl = encodeURIComponent(url);
+      // -------------------------------------------------------------
+      // 3. DIRECT VIDEO FILE
+      // -------------------------------------------------------------
+      if (/\.(mp4|webm|mov|mkv)(\?.*)?$/i.test(rawUrl)) {
         statusBox.innerHTML = `
           <div class="media-card">
-            <div style="flex:1;">
-              <h3 style="font-size:1.1rem; color:var(--facebook); margin-bottom:0.5rem;">🎬 Facebook Video Na-detect!</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-                Dahil sa Android security, pindutin ang buton sa ibaba upang i-extract at i-download ang HD MP4:
-              </p>
-              <div>
-                <button onclick="openExternalBrowser('https://fdown.net/download.php?URL=' + '${cleanUrl}')" class="btn-download-link">
-                  ⬇️ I-download ang Facebook Video (HD/SD)
-                </button>
-              </div>
+            <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--text);">Direct MP4 Stream</h3>
+            <video controls src="${rawUrl}" playsinline></video>
+            <div>
+              <a href="${rawUrl}" download="video.mp4" class="btn-download-link">🎬 I-save ang Video (.mp4)</a>
             </div>
           </div>
         `;
         return;
       }
 
-      // 3. YOUTUBE HANDLER
-      if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const cleanUrl = encodeURIComponent(url);
+      // -------------------------------------------------------------
+      // 4. FACEBOOK & REELS (Inauna ang SD para sigurado may video at boses)
+      // -------------------------------------------------------------
+      let cleanFbUrl = rawUrl;
+      const fbShareMatch = rawUrl.match(/facebook\.com\/share\/[rv]\/(\d+)/i);
+      if (fbShareMatch && fbShareMatch[1]) {
+        cleanFbUrl = `https://www.facebook.com/reel/${fbShareMatch[1]}/`;
+      }
+
+      let sdStream = null;
+      let hdStream = null;
+      let audioStream = null;
+      let videoTitle = "Facebook Video";
+
+      try {
+        const vkrRes = await fetch(`https://vkrdownloader.org/server/?api_key=vkrdownloader&vkr=${encodeURIComponent(cleanFbUrl)}`);
+        if (vkrRes.ok) {
+          const vkrData = await vkrRes.json();
+          if (vkrData && vkrData.data) {
+            videoTitle = vkrData.data.title || videoTitle;
+            const downloads = vkrData.data.downloads;
+
+            if (Array.isArray(downloads) && downloads.length > 0) {
+              downloads.forEach(d => {
+                const text = ((d.format || '') + ' ' + (d.format_note || '') + ' ' + (d.format_id || '')).toLowerCase();
+                const isAudio = text.includes('audio') || d.ext === 'mp3' || d.ext === 'm4a' || d.vcodec === 'none';
+
+                if (isAudio) {
+                  if (!audioStream) audioStream = d.url;
+                } else if (d.url) {
+                  // I-classify ang SD vs HD
+                  if (text.includes('sd') || text.includes('360') || text.includes('480')) {
+                    if (!sdStream) sdStream = d.url;
+                  } else if (text.includes('hd') || text.includes('720') || text.includes('1080')) {
+                    if (!hdStream) hdStream = d.url;
+                  } else {
+                    if (!sdStream) sdStream = d.url;
+                    else if (!hdStream) hdStream = d.url;
+                  }
+                }
+              });
+
+              if (!sdStream && downloads[0] && downloads[0].url) {
+                sdStream = downloads[0].url;
+              }
+            } else if (vkrData.data.url) {
+              sdStream = vkrData.data.url;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("VKR fetch error:", err);
+      }
+
+      // KUNG NAKUHA ANG FACEBOOK STREAMS:
+      if (sdStream || hdStream) {
+        // SD ang laging default preview dahil ito ang 100% may video at audio sa mobile
+        const safePreview = sdStream || hdStream;
+
         statusBox.innerHTML = `
           <div class="media-card">
-            <div style="flex:1;">
-              <h3 style="font-size:1.1rem; color:var(--youtube); margin-bottom:0.5rem;">▶ YouTube Video Na-detect!</h3>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
-                Pindutin ang buton sa ibaba para i-download bilang MP4 Video o MP3 Audio:
-              </p>
-              <div>
-                <button onclick="openExternalBrowser('https://y2meta.mobi/en/?url=' + '${cleanUrl}')" class="btn-download-link">
-                  ⬇️ I-download ang YouTube (MP4 / MP3)
-                </button>
-              </div>
+            <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--text);">${videoTitle}</h3>
+            
+            <!-- Live Preview Player (I-play para marinig ang boses at makita ang video) -->
+            <video controls src="${safePreview}" playsinline></video>
+            
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.8rem;">
+              💡 <em>Rekomendasyon: Gamitin ang <strong>SD Video</strong> para sigurado may picture at tunog sa Gallery.</em>
+            </p>
+            
+            <div>
+              ${sdStream ? `<a href="${sdStream}" download="facebook_sd.mp4" class="btn-download-link">🎬 I-download ang SD Video (May Boses at Video)</a>` : ''}
+              ${hdStream ? `<a href="${hdStream}" download="facebook_hd.mp4" class="btn-alt-link">🎬 I-download ang HD Video</a>` : ''}
+              ${audioStream ? `<a href="${audioStream}" download="facebook_audio.mp3" class="btn-audio-link">🎵 I-download ang Audio (MP3)</a>` : ''}
             </div>
           </div>
         `;
         return;
       }
 
-      // 4. DIRECT VIDEO FILES (.mp4, .webm, atbp.)
-      if (/\.(mp4|webm|mov|mkv|avi)(\?.*)?$/i.test(url)) {
-        statusBox.innerHTML = `
-          ✅ <strong>Direct video link na-detect!</strong><br><br>
-          <a href="${url}" download="video.mp4" target="_blank" class="btn-download-link">⬇️ I-save ang MP4 File</a>
-        `;
-        return;
-      }
-
-      // 5. UNIVERSAL FALLBACK
       statusBox.innerHTML = `
-        <div style="text-align:center;">
-          <p style="margin-bottom:0.75rem; color:var(--accent);">✅ Handa na ang download link. Pindutin ang buton sa ibaba:</p>
-          <button onclick="openExternalBrowser('${url}')" class="btn-download-link">🔗 Buksan at I-download</button>
+        <div style="color:#f87171; text-align:center;">
+          <p><strong>⚠️ Hindi ma-load ang video stream.</strong></p>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem;">
+            Pakisigurado na <strong>Public</strong> ang Reel o Video at may aktibong internet connection.
+          </p>
         </div>
       `;
-    }
-
-    // Helper: Pinipilit buksan sa tunay na Chrome/Default Browser para maiwasan ang in-app WebView scheme crash
-    function openExternalBrowser(targetUrl) {
-      const a = document.createElement('a');
-      a.href = targetUrl;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
     }
 
     // --- TOOL 4: MOVIE DOWNLOADER ---
@@ -735,17 +835,14 @@
 
       statusBox.style.display = 'block';
       statusBox.innerHTML = `
-        🎬 <strong>Nakahanda na ang download!</strong><br><br>
-        <a href="${url}" download="movie.mp4" target="_blank" class="btn-download-link">⬇️ Pindutin para I-save ang Movie</a>
+        <div class="media-card">
+          <h3 style="font-size:1rem; margin-bottom:0.5rem; color:var(--text);">Movie Stream Ready</h3>
+          <video controls src="${url}" playsinline></video>
+          <div>
+            <a href="${url}" download="movie.mp4" class="btn-download-link">⬇️ I-save ang Movie (.mp4)</a>
+          </div>
+        </div>
       `;
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'movie.mp4');
-      link.setAttribute('target', '_blank');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>
